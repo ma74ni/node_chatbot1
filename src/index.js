@@ -25,12 +25,13 @@ async function connect() {
 
   sock.ev.on("creds.update", saveCreds);
 
+  //Conexion
   sock.ev.on("connection.update", async (update) => {
     const { connection, lastDisconnect, qr } = update;
 
     if (qr) {
       // QR en terminal
-      console.log(await QRCode.toString(qr, { type: "terminal" }));
+      console.log(await QRCode.toString(qr, { type: "terminal", small: true }));
     }
 
     if (connection === "open") {
@@ -52,7 +53,6 @@ async function connect() {
       );
 
       if (shouldReconnect) {
-        // reconectar realmente (¡aquí estaba el bug!)
         setTimeout(() => connect().catch(console.error), 2000);
       } else {
         console.log(
@@ -61,9 +61,27 @@ async function connect() {
       }
     }
   });
+  // recibir mensajes e interactuar
+  sock.ev.on("messages.upsert", async (e) => {
+    for (const m of e.messages) {
+      console.log(m);
 
-  // (opcional) requerido en algunas versiones si usas mensajes guardados
-  sock.ev.on("messages.upsert", () => {});
+      const id = m.key.remoteJid;
+
+      //grupos: @g.us
+      //broadcast: @broadcast
+      if (
+        e.type !== "notify" ||
+        m.key.fromMe ||
+        id.includes("@g.us") ||
+        id.includes("@broadcast")
+      ) {
+        return;
+      }
+
+      await sock.sendMessage(id, { text: "jajaja" });
+    }
+  });
 }
 
 connect().catch((e) => {
