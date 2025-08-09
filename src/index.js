@@ -119,16 +119,16 @@ async function connect(retry = 0) {
           mentions: ["593961128233@s.whatsapp.net"],
         });
         //ubicación
-        await sock.sendMessage(id, {
+        /*  await sock.sendMessage(id, {
           location: {
             degreesLatitude: -0.2545039,
             degreesLongitude: -78.5178756,
             address: "Hope Northon y Rother",
           },
-        });
+        }); */
 
         //contacto
-        const vcard =
+        /* const vcard =
           "BEGIN:VCARD\n" + // metadata of the contact card
           "VERSION:3.0\n" +
           "FN:Diego Paredes\n" + // full name
@@ -141,24 +141,32 @@ async function connect(retry = 0) {
             displayName: "Diego Paredes",
             contacts: [{ vcard }],
           },
-        });
+        }); */
 
         //reacciones
         await sock.sendMessage(id, { react: { text: "❤️", key: m.key } });
 
         //encuestas
-        await sock.sendMessage(id, {
+        /*  await sock.sendMessage(id, {
           poll: {
             name: "Mi encuesta",
             values: ["Option 1", "Option 2"],
             selectableCount: 1,
             toAnnouncementGroup: false, // or true
           },
-        });
+        }); */
 
         //envío de links con vista previa
-        await sock.sendMessage(id, {
+        /* await sock.sendMessage(id, {
           text: "Hi, this was sent using https://github.com/whiskeysockets/baileys",
+        }); */
+
+        //envío de imágenes
+        await sock.sendMessage(id, {
+          image: {
+            url: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/I%27m_Feeling_Lucky_tee_shirt.jpg/800px-I%27m_Feeling_Lucky_tee_shirt.jpg",
+          },
+          caption: "I'm feeling lucky!",
         });
       } catch (err) {
         console.error("Error procesando mensaje:", err);
