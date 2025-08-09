@@ -4,6 +4,7 @@ const {
   DisconnectReason,
   fetchLatestBaileysVersion,
   jidNormalize,
+  delay,
 } = require("baileys");
 const QRCode = require("qrcode");
 const Pino = require("pino");
@@ -73,6 +74,8 @@ async function connect(retry = 0) {
         const idRaw = m.key?.remoteJid;
         if (!idRaw) continue;
 
+        const name = m.pushName || "";
+
         const id = jidNormalize ? jidNormalize(idRaw) : idRaw;
 
         // Ignorar grupos y broadcasts
@@ -90,9 +93,67 @@ async function connect(retry = 0) {
           msg.videoMessage?.caption ||
           "";
 
+        //Leer mensaje, "poner en azul los visto"
+        await sock.readMessages([m.key]);
+
+        //Animación: escribiendo...
+        await sock.sendPresenceUpdate("recording", id);
+        await delay(2500);
+
+        //Respuesta con nombre y repondiendo al último mensaje
+        const saludo = name !== "" ? `Hola ${name},` : `Hola,`;
+        await sock.sendMessage(
+          id,
+          {
+            text: `${saludo} cómo te puedo ayudar hoy?`,
+          },
+          { quoted: m }
+        );
         // Respuesta simple de prueba
         await sock.sendMessage(id, {
           text: text ? `Recibido: ${text}` : "jajaja",
+        });
+        //menciones
+        await sock.sendMessage(id, {
+          text: "Hola @593961128233, te estamos buscando!",
+          mentions: ["593961128233@s.whatsapp.net"],
+        });
+        //ubicación
+        await sock.sendMessage(id, {
+          location: {
+            degreesLatitude: -0.2545039,
+            degreesLongitude: -78.5178756,
+            address: "Hope Northon y Rother",
+          },
+        });
+
+        //contacto
+        const vcard =
+          "BEGIN:VCARD\n" + // metadata of the contact card
+          "VERSION:3.0\n" +
+          "FN:Diego Paredes\n" + // full name
+          "ORG:Diego Co;\n" + // the organization of the contact
+          "TEL;type=CELL;type=VOICE;waid=593961128233:+593 96112 8233\n" + // WhatsApp ID + phone number
+          "END:VCARD";
+
+        await sock.sendMessage(id, {
+          contacts: {
+            displayName: "Diego Paredes",
+            contacts: [{ vcard }],
+          },
+        });
+
+        //reacciones
+        await sock.sendMessage(id, { react: { text: "❤️", key: m.key } });
+
+        //encuestas
+        await sock.sendMessage(id, {
+          poll: {
+            name: "Mi encuesta",
+            values: ["Option 1", "Option 2"],
+            selectableCount: 1,
+            toAnnouncementGroup: false, // or true
+          },
         });
       } catch (err) {
         console.error("Error procesando mensaje:", err);
