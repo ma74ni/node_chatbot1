@@ -168,6 +168,22 @@ async function connect(retry = 0) {
           },
           caption: "I'm feeling lucky!",
         });
+
+        //envío de pdf
+        /* await sock.sendMessage(id, {
+          document: {
+            url: "https://www.educacionsuperior.gob.ec/wp-content/uploads/2021/02/P-C_TemarioEAES-2021.pdf",
+          },
+          mimetype: "application/pdf",
+          fileName: "Temario_EAES_2021.pdf",
+        }); */
+
+        //video
+        await sock.sendMessage(id, {
+          video: { url: "./media/final.mp4" },
+          caption: "Mi video",
+          ptv: true, //true = video nota, circulo
+        });
       } catch (err) {
         console.error("Error procesando mensaje:", err);
         continue;
