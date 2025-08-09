@@ -8,5 +8,9 @@
   "type": "commonjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "baileys": "^6.7.18",
+    "qrcode": "^1.5.4"
   }
 }
