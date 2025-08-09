@@ -155,6 +155,11 @@ async function connect(retry = 0) {
             toAnnouncementGroup: false, // or true
           },
         });
+
+        //envío de links con vista previa
+        await sock.sendMessage(id, {
+          text: "Hi, this was sent using https://github.com/whiskeysockets/baileys",
+        });
       } catch (err) {
         console.error("Error procesando mensaje:", err);
         continue;
